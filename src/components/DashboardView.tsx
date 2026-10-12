@@ -15,11 +15,13 @@ import {
   Compass
 } from 'lucide-react';
 import { WaqfAsset, DistributionProject, BlockchainBlock } from '../types';
+import { InteractiveMap } from './InteractiveMap';
 
 interface DashboardViewProps {
   assets: WaqfAsset[];
   projects: DistributionProject[];
   recentBlocks: BlockchainBlock[];
+  darkMode: boolean;
   onNavigateToTab: (tab: string) => void;
   onOpenPdfReport: () => void;
   onSelectAsset?: (asset: WaqfAsset) => void;
@@ -29,11 +31,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   assets,
   projects,
   recentBlocks,
+  darkMode,
   onNavigateToTab,
   onOpenPdfReport,
   onSelectAsset
 }) => {
   // Widget customization states
+  const [showMapWidget, setShowMapWidget] = useState(true);
   const [showYieldWidget, setShowYieldWidget] = useState(true);
   const [showSectorDistribution, setShowSectorDistribution] = useState(true);
   const [showBlockchainTicker, setShowBlockchainTicker] = useState(true);
@@ -94,6 +98,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </span>
           </div>
           <div className="flex flex-wrap gap-4 text-xs">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showMapWidget}
+                onChange={(e) => setShowMapWidget(e.target.checked)}
+                className="rounded text-emerald-600 focus:ring-emerald-500"
+              />
+              <span className="text-neutral-700 dark:text-neutral-300 font-medium">Peta Geospasial Interaktif Nusantara</span>
+            </label>
+
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -195,6 +209,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Interactive Geolocation Map of Waqf Assets & Projects across Indonesia */}
+      {showMapWidget && (
+        <InteractiveMap
+          assets={assets}
+          projects={projects}
+          darkMode={darkMode}
+          onNavigateToTab={onNavigateToTab}
+        />
+      )}
 
       {/* Productive Waqf Assets Section */}
       <div className="space-y-4">

@@ -27,6 +27,8 @@ export const INITIAL_WAQF_ASSETS: WaqfAsset[] = [
     status: 'Aktif Menghasilkan',
     image: '/src/assets/images/wakaf_asset_hospital_1791795776935.jpg',
     location: 'Cianjur & Sukabumi, Jawa Barat',
+    lat: -6.8222,
+    lng: 107.1394,
     lastAudited: '10 Oktober 2026'
   },
   {
@@ -44,6 +46,8 @@ export const INITIAL_WAQF_ASSETS: WaqfAsset[] = [
     status: 'Aktif Menghasilkan',
     image: '/src/assets/images/wakaf_asset_hospital_1791795776935.jpg',
     location: 'Subang & Karawang, Jawa Barat',
+    lat: -6.5599,
+    lng: 107.7599,
     lastAudited: '08 Oktober 2026'
   },
   {
@@ -61,6 +65,8 @@ export const INITIAL_WAQF_ASSETS: WaqfAsset[] = [
     status: 'Aktif Menghasilkan',
     image: '/src/assets/images/wakaf_asset_hospital_1791795776935.jpg',
     location: 'Jakarta Selatan & Tangerang Selatan',
+    lat: -6.2615,
+    lng: 106.8106,
     lastAudited: '02 Oktober 2026'
   },
   {
@@ -77,7 +83,9 @@ export const INITIAL_WAQF_ASSETS: WaqfAsset[] = [
     merkleProof: '0x5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c',
     status: 'Aktif Menghasilkan',
     image: '/src/assets/images/wakaf_asset_hospital_1791795776935.jpg',
-    location: 'Nasional Republik Indonesia',
+    location: 'Nasional Republik Indonesia (DKI Jakarta)',
+    lat: -6.1754,
+    lng: 106.8272,
     lastAudited: '11 Oktober 2026'
   }
 ];
@@ -91,6 +99,8 @@ export const INITIAL_PROJECTS: DistributionProject[] = [
     disbursedTotal: 980000000,
     beneficiariesCount: 150,
     location: 'Kepulauan Mentawai & Alor, NTT',
+    lat: -1.4880,
+    lng: 98.9211,
     fatwaReference: 'Fatwa DSN-MUI No. 106/DSN-MUI/X/2016 tentang Wakaf Manfaat',
     status: 'Berjalan',
     fieldOfficer: 'Ustadz Salman Farisi, S.Sos',
@@ -98,7 +108,7 @@ export const INITIAL_PROJECTS: DistributionProject[] = [
     photos: [
       '/src/assets/images/wakaf_asset_hospital_1791795776935.jpg'
     ],
-    gpsCoordinates: '-1.3524° S, 98.9211° E'
+    gpsCoordinates: '-1.4880° S, 98.9211° E'
   },
   {
     id: 'dist-02',
@@ -108,6 +118,8 @@ export const INITIAL_PROJECTS: DistributionProject[] = [
     disbursedTotal: 850000000,
     beneficiariesCount: 240,
     location: 'Lombok Timur, NTB & Kudus, Jawa Tengah',
+    lat: -8.6500,
+    lng: 116.5312,
     fatwaReference: 'Keputusan BWI No. 04/BWI/2018 tentang Penyaluran Mauquf alaih Pendidikan',
     status: 'Selesai',
     fieldOfficer: 'H. Luqman Hakim, M.Pd',
@@ -115,7 +127,7 @@ export const INITIAL_PROJECTS: DistributionProject[] = [
     photos: [
       '/src/assets/images/wakaf_asset_hospital_1791795776935.jpg'
     ],
-    gpsCoordinates: '-8.5024° S, 116.5312° E'
+    gpsCoordinates: '-8.6500° S, 116.5312° E'
   },
   {
     id: 'dist-03',
@@ -125,6 +137,8 @@ export const INITIAL_PROJECTS: DistributionProject[] = [
     disbursedTotal: 1120000000,
     beneficiariesCount: 3420,
     location: 'Kepulauan Selayar & Wakatobi',
+    lat: -6.1200,
+    lng: 120.4811,
     fatwaReference: 'Fatwa MUI No. 4 Tahun 2012 tentang Pengelolaan Harta Wakaf Kesehatan',
     status: 'Berjalan',
     fieldOfficer: 'dr. Farhan Syahputra, Sp.A',
@@ -132,7 +146,7 @@ export const INITIAL_PROJECTS: DistributionProject[] = [
     photos: [
       '/src/assets/images/wakaf_asset_hospital_1791795776935.jpg'
     ],
-    gpsCoordinates: '-5.8921° S, 120.4811° E'
+    gpsCoordinates: '-6.1200° S, 120.4811° E'
   },
   {
     id: 'dist-04',
@@ -142,6 +156,8 @@ export const INITIAL_PROJECTS: DistributionProject[] = [
     disbursedTotal: 480000000,
     beneficiariesCount: 80,
     location: 'Solo Raya & Daerah Istimewa Yogyakarta',
+    lat: -7.5681,
+    lng: 110.8250,
     fatwaReference: 'Fatwa DSN-MUI No. 19/DSN-MUI/IV/2001 tentang Qardhul Hasan',
     status: 'Berjalan',
     fieldOfficer: 'Siti Rahmawati, S.E.I',

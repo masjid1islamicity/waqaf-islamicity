@@ -15,6 +15,8 @@ export interface WaqfAsset {
   status: 'Aktif Menghasilkan' | 'Dalam Pengembangan' | 'Audit Berkala';
   image: string;
   location: string;
+  lat: number;
+  lng: number;
   lastAudited: string;
 }
 
@@ -26,6 +28,8 @@ export interface DistributionProject {
   disbursedTotal: number;
   beneficiariesCount: number;
   location: string;
+  lat: number;
+  lng: number;
   fatwaReference: string;
   status: 'Berjalan' | 'Selesai' | 'Verifikasi Pengawas';
   fieldOfficer: string;
