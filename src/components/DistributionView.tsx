@@ -7,11 +7,24 @@ import {
   ShieldCheck, 
   FileText, 
   Camera, 
-  Search,
-  Filter,
-  Sparkles,
-  DollarSign
+  Search, 
+  Filter, 
+  Sparkles, 
+  DollarSign,
+  BarChart3,
+  TrendingUp,
+  PieChart as PieChartIcon
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from 'recharts';
 import { DistributionProject } from '../types';
 
 interface DistributionViewProps {
@@ -28,6 +41,7 @@ export const DistributionView: React.FC<DistributionViewProps> = ({
   const [selectedSector, setSelectedSector] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [chartViewMode, setChartViewMode] = useState<'project' | 'sector'>('project');
 
   // New disbursement form state
   const [formTitle, setFormTitle] = useState('');
@@ -46,6 +60,46 @@ export const DistributionView: React.FC<DistributionViewProps> = ({
                           p.fieldOfficer.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSector && matchesSearch;
   });
+
+  // Calculate summary metrics
+  const totalBudget = projects.reduce((acc, curr) => acc + curr.budgetTotal, 0);
+  const totalDisbursed = projects.reduce((acc, curr) => acc + curr.disbursedTotal, 0);
+  const totalRemaining = Math.max(0, totalBudget - totalDisbursed);
+  const overallAbsorptionRate = totalBudget > 0 ? Math.round((totalDisbursed / totalBudget) * 100) : 0;
+
+  // Chart data: Per Project
+  const projectChartData = projects.map((p) => {
+    // Shorten title for readable X-axis
+    const shortTitle = p.title.length > 22 ? p.title.substring(0, 20) + '...' : p.title;
+    return {
+      name: shortTitle,
+      fullName: p.title,
+      targetJuta: Math.round(p.budgetTotal / 1000000),
+      realisasiJuta: Math.round(p.disbursedTotal / 1000000),
+      persentase: Math.round((p.disbursedTotal / p.budgetTotal) * 100),
+      sector: p.sector
+    };
+  });
+
+  // Chart data: Per Sector
+  const sectorMap: { [key: string]: { target: number; realisasi: number } } = {};
+  projects.forEach((p) => {
+    if (!sectorMap[p.sector]) {
+      sectorMap[p.sector] = { target: 0, realisasi: 0 };
+    }
+    sectorMap[p.sector].target += p.budgetTotal;
+    sectorMap[p.sector].realisasi += p.disbursedTotal;
+  });
+
+  const sectorChartData = Object.entries(sectorMap).map(([sector, values]) => ({
+    name: sector.replace(' & ', '\n& '),
+    fullName: sector,
+    targetJuta: Math.round(values.target / 1000000),
+    realisasiJuta: Math.round(values.realisasi / 1000000),
+    persentase: values.target > 0 ? Math.round((values.realisasi / values.target) * 100) : 0
+  }));
+
+  const activeChartData = chartViewMode === 'project' ? projectChartData : sectorChartData;
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,6 +147,182 @@ export const DistributionView: React.FC<DistributionViewProps> = ({
           <Plus className="w-4 h-4" />
           <span>Ajukan Penyaluran Baru</span>
         </button>
+      </div>
+
+      {/* Summary KPI Strip */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xs space-y-1">
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Total Target Anggaran</div>
+          <div className="text-xl font-bold font-mono-numbers text-neutral-900 dark:text-neutral-100">
+            Rp {(totalBudget / 1000000000).toFixed(2)} M
+          </div>
+          <div className="text-[11px] text-neutral-500">Alokasi Rencana Mauquf 'Alaih</div>
+        </div>
+
+        <div className="p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xs space-y-1">
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Realisasi Tersalurkan</div>
+          <div className="text-xl font-bold font-mono-numbers text-emerald-700 dark:text-emerald-400">
+            Rp {(totalDisbursed / 1000000000).toFixed(2)} M
+          </div>
+          <div className="text-[11px] text-emerald-600 font-medium">{overallAbsorptionRate}% Terserap Efektif</div>
+        </div>
+
+        <div className="p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xs space-y-1">
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Sisa Komitmen Alokasi</div>
+          <div className="text-xl font-bold font-mono-numbers text-neutral-800 dark:text-neutral-200">
+            Rp {(totalRemaining / 1000000).toFixed(0)} Jt
+          </div>
+          <div className="text-[11px] text-neutral-500">Menunggu Tahap Penyaluran Berikutnya</div>
+        </div>
+
+        <div className="p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xs space-y-1">
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Akuntabilitas & Fatwa</div>
+          <div className="text-xl font-bold font-mono-numbers text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <span>100% Sah</span>
+          </div>
+          <div className="text-[11px] text-neutral-500">Tercatat Buku Besar & Rekomendasi DPS</div>
+        </div>
+      </div>
+
+      {/* Visualisasi Data Recharts: Grafik Batang Perbandingan Target vs Realisasi */}
+      <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-neutral-100 dark:border-neutral-800">
+          <div>
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-emerald-600" />
+              <h3 className="text-sm sm:text-base font-bold text-neutral-900 dark:text-neutral-100">
+                Visualisasi Perbandingan Anggaran: Target vs. Realisasi Penyaluran
+              </h3>
+            </div>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Grafik komparatif penyerapan dana dakwah & mauquf 'alaih dalam satuan Juta Rupiah (IDR)
+            </p>
+          </div>
+
+          {/* Toggle View Mode: Per Program vs Per Sektor */}
+          <div className="flex items-center gap-1 p-1 bg-neutral-100 dark:bg-neutral-800 rounded-lg shrink-0">
+            <button
+              onClick={() => setChartViewMode('project')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                chartViewMode === 'project'
+                  ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 shadow-xs font-semibold'
+                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900'
+              }`}
+            >
+              Per Program ({projects.length})
+            </button>
+            <button
+              onClick={() => setChartViewMode('sector')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                chartViewMode === 'sector'
+                  ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 shadow-xs font-semibold'
+                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900'
+              }`}
+            >
+              Per Sektor (4 Bidang)
+            </button>
+          </div>
+        </div>
+
+        {/* Recharts Container */}
+        <div className="h-72 sm:h-80 w-full pt-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={activeChartData}
+              margin={{ top: 15, right: 20, left: 10, bottom: 25 }}
+              barGap={6}
+            >
+              <CartesianGrid strokeDasharray="3 3" opacity={0.15} vertical={false} />
+              <XAxis 
+                dataKey="name" 
+                tick={{ fontSize: 11, fill: '#737373' }}
+                axisLine={{ stroke: '#d4d4d4', opacity: 0.5 }}
+                tickLine={false}
+                interval={0}
+              />
+              <YAxis 
+                tick={{ fontSize: 11, fill: '#737373' }}
+                axisLine={{ stroke: '#d4d4d4', opacity: 0.5 }}
+                tickLine={false}
+                tickFormatter={(value) => `${value} Jt`}
+              />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="p-3 bg-neutral-900 text-white rounded-lg shadow-xl border border-neutral-700 text-xs space-y-1.5 font-sans">
+                        <div className="font-semibold text-emerald-400 max-w-xs break-words">
+                          {data.fullName}
+                        </div>
+                        {data.sector && (
+                          <div className="text-[10px] text-neutral-400">
+                            Sektor: {data.sector}
+                          </div>
+                        )}
+                        <div className="pt-1 border-t border-neutral-800 space-y-1 font-mono-numbers">
+                          <div className="flex justify-between gap-4 text-neutral-300">
+                            <span>Target Anggaran:</span>
+                            <span className="font-semibold">Rp {data.targetJuta.toLocaleString()} Jt</span>
+                          </div>
+                          <div className="flex justify-between gap-4 text-emerald-400">
+                            <span>Realisasi Penyaluran:</span>
+                            <span className="font-bold">Rp {data.realisasiJuta.toLocaleString()} Jt</span>
+                          </div>
+                          <div className="flex justify-between gap-4 text-amber-300 pt-0.5">
+                            <span>Rasio Penyerapan:</span>
+                            <span className="font-bold">{data.persentase}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Legend 
+                verticalAlign="top"
+                align="right"
+                wrapperStyle={{ paddingBottom: '10px', fontSize: '12px' }}
+                formatter={(value) => {
+                  return value === 'targetJuta' ? 'Target Anggaran (Juta IDR)' : 'Realisasi Penyaluran (Juta IDR)';
+                }}
+              />
+              <Bar 
+                dataKey="targetJuta" 
+                name="targetJuta"
+                fill="#94a3b8" 
+                radius={[4, 4, 0, 0]} 
+                maxBarSize={48}
+              />
+              <Bar 
+                dataKey="realisasiJuta" 
+                name="realisasiJuta"
+                fill="#059669" 
+                radius={[4, 4, 0, 0]} 
+                maxBarSize={48}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Legend notes */}
+        <div className="flex flex-wrap items-center justify-between text-[11px] text-neutral-500 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-xs bg-[#94a3b8]" />
+              <span>Target Rencana Kerja Anggaran</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-xs bg-[#059669]" />
+              <span>Realisasi Terdistribusi & Tervalidasi</span>
+            </span>
+          </div>
+          <span className="font-mono-numbers">
+            Sumber data: Rekonsiliasi Bank Kustodian & Smart Contract
+          </span>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
