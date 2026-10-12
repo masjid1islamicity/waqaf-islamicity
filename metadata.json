@@ -1,0 +1,8 @@
+{
+  "name": "Al-Waqfiyah Islamicity",
+  "description": "Platform Manajemen Investasi Dakwah & Wakaf Produktif Berbasis Syariah dengan Integrasi Blockchain, AI Task & Audit, Mutaba'ah KPI, dan Pelaporan Real-Time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
